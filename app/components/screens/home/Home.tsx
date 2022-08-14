@@ -1,12 +1,17 @@
 import { FC } from 'react';
-import { useGetProductsQuery } from '../../../store/product/product.api';
+import {
+  useGetCategoriesQuery,
+  useGetProductsQuery,
+} from '../../../store/product/product.api';
 import CartDropdown from './cart-dropdown/CartDropdown';
 import ProductItem from './ProductItem';
 import ProductSkeleton from './ProductSkeleton';
 
 const Home: FC = () => {
   const { data, error, isLoading } = useGetProductsQuery(10);
-  console.log(isLoading);
+  const categories = useGetCategoriesQuery();
+  console.log(categories);
+
   return (
     <div>
       <div className="flex justify-between items-center mb-10">
@@ -16,12 +21,18 @@ const Home: FC = () => {
         <CartDropdown />
       </div>
 
+      {categories?.data.map((item) => {
+        return <div>{item}</div>;
+      })}
+
       {isLoading ? (
         <div className="flex flex-wrap justify-between">
-          {/* {new Array(3).map((product: any) => (
+          {new Array(3).map((product: any) => (
             <ProductSkeleton />
-          ))} */}
+          ))}
         </div>
+      ) : error ? (
+        <h2 className="text-red">{error}</h2>
       ) : (
         <div className="flex flex-wrap justify-between">
           {data?.map((product: any) => (
@@ -29,12 +40,6 @@ const Home: FC = () => {
           ))}
         </div>
       )}
-
-      <div className="flex flex-wrap justify-between">
-        {data?.map((product: any) => (
-          <ProductItem key={product.id} product={product} />
-        ))}
-      </div>
     </div>
   );
 };
